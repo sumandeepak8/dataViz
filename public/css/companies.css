@@ -1,0 +1,22 @@
+html, body, .container {
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+svg {
+    border: 1px solid grey;
+}
+
+.x.axis-label {
+    font-size: 24px;
+    text-anchor: middle;
+}
+
+.x-axis {
+    text-anchor: end;
+}

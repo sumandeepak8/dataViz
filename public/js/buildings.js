@@ -69,6 +69,8 @@ const drawBuildings = (buildings) => {
 
   const rectangles = g.selectAll("rect").data(buildings);
 
+  console.log("buildinfs ", buildings);
+
   const newRects = rectangles.enter();
   newRects.append("rect")
     .attr("x", b => x(b.name))
@@ -81,6 +83,6 @@ const drawBuildings = (buildings) => {
 }
 
 const main = () => {
-  d3.csv('data/buildings.json').then(drawBuildings);
+  d3.json('data/buildings.json').then(drawBuildings);
 }
 window.onload = main;
