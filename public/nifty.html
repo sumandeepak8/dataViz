@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body, .container {
+            height: 100%;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        svg {
+            border: 1px solid grey;
+        }
+
+        .x.axis-label {
+            font-size: 24px;
+            text-anchor: middle;
+        }
+
+        .x-axis {
+            text-anchor: end;
+        }
+
+        .close {
+            stroke: lightseagreen;
+            stroke-width: 3px;
+            fill: none;
+        }
+    </style>
+    <title>Nifty</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/companies.css">
+</head>
+<body>
+    <script src="js/lodash.min.js"></script>
+    <script src="js/d3.v5.min.js"></script>
+    <script src="js/nifty.js"></script>
+
+    <div class="container">
+        <div class="row">
+            <div id="chart-area" class="col-sm"></div>
+            <div id="chart-data" class="col-sm"></div>
+        </div>
+  </div>
+</body>
+</html>
