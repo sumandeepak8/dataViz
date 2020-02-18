@@ -51,7 +51,7 @@ const drawQuotes = function (quotes) {
 
     const x = d3.scaleTime()
         .range([0, width])
-        .domain([new Date(fq.Date), new Date(lq.Date)]);
+        .domain([fq.Date, lq.Date]);
 
     const xAxis = d3.axisBottom(x);
     g.append("g")
@@ -72,21 +72,25 @@ const drawQuotes = function (quotes) {
 
     g.attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    const line = d3.line()
+    const line = key => d3.line()
         .x(b => x(b.Date))
-        .y(b => y(b.Close))
+        .y(b => y(b[key]))
 
     g.append('path')
         .attr('class', 'close')
-        .attr('d', line(quotes));
+        .attr('d', line('Close')(quotes));
+
+    g.append('path')
+        .attr('class', 'average')
+        .attr('d', line('Average')(quotes));
 }
 
 const calculateAverage = function (quotes) {
     let total = 0;
+    let count = 1;
     return function (quote) {
         let startIndex = 0;
         let finalIndex = startIndex + total + 1;
-        let count = total;
 
         if (total >= 100) {
             const dividend = Math.floor(total / 99) * 99;
@@ -97,6 +101,7 @@ const calculateAverage = function (quotes) {
         total = total + 1;
         quote.Average = quotes.slice(startIndex, finalIndex)
             .reduce((acc, x) => acc + x[selectedField], 0) / count;
+        count = count + 1;
     }
 }
 
@@ -113,8 +118,7 @@ const parseQuote = function (quote) {
 
 const main = () => {
     d3.csv("data/nifty-data.csv", parseQuote).then(quotes => {
-        const mapper = calculateAverage(quotes);
-        quotes.forEach(mapper);
+        quotes.forEach(calculateAverage(quotes));
         intiChart();
         drawQuotes(quotes);
     });
