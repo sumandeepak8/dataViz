@@ -80,29 +80,23 @@ const drawQuotes = function (quotes) {
         .attr('class', 'close')
         .attr('d', line('Close')(quotes));
 
+    const modifiedQuotes = calculateAverage(quotes);
+
     g.append('path')
         .attr('class', 'average')
-        .attr('d', line('Average')(quotes));
+        .attr('d', line('Average')(modifiedQuotes));
 }
 
 const calculateAverage = function (quotes) {
-    let total = 0;
-    let count = 1;
-    return function (quote) {
-        let startIndex = 0;
-        let finalIndex = startIndex + total + 1;
-
-        if (total >= 100) {
-            const dividend = Math.floor(total / 99) * 99;
-            startIndex = dividend - (100 - (total % dividend)) + 1;
-            finalIndex = startIndex + 100;
-            count = 100;
-        }
-        total = total + 1;
-        quote.Average = quotes.slice(startIndex, finalIndex)
-            .reduce((acc, x) => acc + x[selectedField], 0) / count;
-        count = count + 1;
-    }
+    let numberOfQuotes = 99;
+    quotes.forEach((quote, index) => {
+        if (index >= numberOfQuotes)
+            quote.Average = (quotes.slice(index - numberOfQuotes, index++)
+                .map(quote => quote.Close)
+                .reduce((a, b) => a + b))
+                / 100;
+    })
+    return quotes.slice(100);
 }
 
 const parseQuote = function (quote) {
@@ -118,7 +112,6 @@ const parseQuote = function (quote) {
 
 const main = () => {
     d3.csv("data/nifty-data.csv", parseQuote).then(quotes => {
-        quotes.forEach(calculateAverage(quotes));
         intiChart();
         drawQuotes(quotes);
     });
