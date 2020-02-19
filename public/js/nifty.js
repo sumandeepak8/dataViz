@@ -6,8 +6,8 @@ const margin = {
 };
 
 const chartSize = {
-    width: 800,
-    height: 600,
+    width: 1220,
+    height: 700,
 };
 
 const width = chartSize.width - (margin.left + margin.right);
@@ -75,6 +75,10 @@ const drawQuotes = function (quotes) {
     const line = key => d3.line()
         .x(b => x(b.Date))
         .y(b => y(b[key]))
+
+    var slider = createD3RangeSlider(0, 100, "#slider-container");
+    slider.range(1, 100);
+
 
     g.append('path')
         .attr('class', 'close')

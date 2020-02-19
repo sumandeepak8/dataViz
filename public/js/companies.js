@@ -85,16 +85,16 @@ const updateCompanies = function (companies, selectedField) {
     const y = yAxisLabel(companies, selectedField)
     const x = xAxisLabel(companies);
     const xAxis = d3.axisBottom(x);
-    g.select('.x-axis').call(xAxis);
+    svg.select('.x-axis').call(xAxis);
 
-    g.selectAll(".x-axis text")
+    svg.selectAll(".x-axis text")
         .attr("transform", "rotate(-40)")
         .attr("x", -5)
         .attr("y", 10);
 
     const yAxis = d3.axisLeft(y).tickFormat(d => d).ticks(6);
 
-    g.select(".y-axis").call(yAxis);
+    svg.select(".y-axis").call(yAxis);
 
     svg
         .selectAll("rect")

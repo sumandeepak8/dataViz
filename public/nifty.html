@@ -38,18 +38,33 @@
             stroke-width: 1px;
             fill: none;
         }
+
+        .container row {
+                margin-bottom: 20px;
+                border: 1px solid black;
+        }
+
     </style>
     <title>Nifty</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/companies.css">
-</head>
-<body>
+
     <script src="js/lodash.min.js"></script>
     <script src="js/d3.v5.min.js"></script>
     <script src="js/nifty.js"></script>
 
+    <script src="https://cdn.rawgit.com/RasmusFonseca/d3RangeSlider/master/d3RangeSlider.js"></script>
+
+    <link href="https://cdn.rawgit.com/RasmusFonseca/d3RangeSlider/master/d3RangeSlider.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/companies.css">
+</head>
+<body>
+    
     <div class="container">
         <div class="row">
+            <row class="col-sm">     
+                <div id="slider-container"></div>
+                <div id="range-label"></div>
+            </row>
             <div id="chart-area" class="col-sm"></div>
             <div id="chart-data" class="col-sm"></div>
         </div>
