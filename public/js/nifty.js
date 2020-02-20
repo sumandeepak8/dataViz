@@ -41,7 +41,7 @@ const intiChart = function () {
         .attr("y", -60);
 }
 
-const drawQuotes = function (quotes) {
+const drawQuotes = function (quotes, quotesWithAverage) {
     const g = d3.select('g');
     g.selectAll('g').remove();
     g.selectAll('path').remove();
@@ -79,16 +79,86 @@ const drawQuotes = function (quotes) {
         .x(b => x(b.Date))
         .y(b => y(b[key]))
 
-    const modifiedQuotes = calculateAverage(quotes);
-
     g.append('path')
         .attr('class', 'close')
         .attr('d', line('Close')(quotes));
 
     g.append('path')
         .attr('class', 'average')
-        .attr('d', line('Average')(modifiedQuotes));
+        .attr('d', line('Average')(quotesWithAverage));
 }
+
+const getProfitOrLoss = transaction =>
+    Math.round(transaction.buy.Close - transaction.sell.Close);
+
+const getSrNum = (x = 1) => (() => x++);
+
+const getTableofStatistics = function (transactions) {
+
+    let quotesOfProfit = transactions.filter(x => getProfitOrLoss(x) >= 0);
+    let quotesOfLoss = transactions.filter(x => getProfitOrLoss(x) < 0);
+
+    let totalQuotesOfProfit = quotesOfProfit.length;
+    let totalQuotesOfLoss = quotesOfLoss.length;
+
+    let totalProfit = quotesOfProfit.reduce((acc, x) => (acc + getProfitOrLoss(x)), 0);
+    let totalLoss = quotesOfLoss.reduce((acc, x) => (acc + getProfitOrLoss(x)), 0);
+
+    let averageOfProfit = totalProfit / totalQuotesOfProfit;
+    let averageOfLoss = totalLoss / totalQuotesOfLoss;
+
+    let expectancy = totalProfit / transactions.length;
+
+    return {
+        totalLoss,
+        totalProfit,
+        totalQuotesOfLoss,
+        totalQuotesOfProfit,
+        averageOfLoss,
+        averageOfProfit,
+        expectancy,
+    }
+}
+
+const getTableOfAllTransaction = function (transactions) {
+    const newRows = d3.select("#transaction-to-buy")
+        .selectAll("tr")
+        .data(transactions)
+        .enter()
+        .append("tr");
+
+    newRows.append("td")
+        .html(getSrNum());
+    newRows.append("td")
+        .html(transaction => transaction.buy.Close);
+    newRows.append("td")
+        .html(transaction => transaction.sell.Close);
+    newRows.append("td")
+        .html(x => getProfitOrLoss(x));
+}
+
+//buy : when average is low and price is above than average
+//sell : when average is high and price is below than average
+
+const getProfitableQuotes = (quotes) => {
+    let profitableQuotes = quotes
+        .reduce((acc, quote) => {
+            if (quote.Average <= quote.Close && acc.canBuy) { //buy
+                acc.transactions.push({ "buy": quote });
+                acc.canBuy = false;
+                return acc
+            }
+            if (quote.Average > quote.Close && !acc.canBuy) {
+                _.last(acc.transactions)["sell"] = quote;
+                acc.canBuy = true;
+                return acc;
+            }
+            return acc;
+        }, { transactions: [], canBuy: true })
+
+    profitableQuotes.canBuy ? '' : profitableQuotes.transactions.pop();
+    return profitableQuotes;
+};
 
 const calculateAverage = function (quotes) {
     let numberOfQuotes = 99;
@@ -119,20 +189,24 @@ const main = () => {
         slider.range(1, 100);
 
         intiChart();
-        drawQuotes(quotes);
+        const quotesWithAverage = calculateAverage(quotes);
+        const profitableQuotes = getProfitableQuotes(quotesWithAverage);
 
-        slider.onChange(newRange => {
+        drawQuotes(quotes, quotesWithAverage, profitableQuotes);
+        getTableOfAllTransaction(profitableQuotes.transactions);
+        console.log("statistics ", getTableofStatistics(profitableQuotes.transactions));
+        slider.onChange(({ begin, end }) => {
             let ratio = Math.round(quotes.length / 100);
-            let startIndex = newRange.begin * ratio;
-            let lastIndex = newRange.end * ratio;
+            let startIndex = begin * ratio;
+            let lastIndex = end * ratio;
 
             let startDate = quotes[startIndex].Date.toDateString();
-
             let endDate = quotes[lastIndex].Date.toDateString();
 
             d3.select("#range-label").text(startDate + " - " + endDate);
             let quotesOfRange = quotes.slice(startIndex, lastIndex);
-            drawQuotes(quotesOfRange);
+            let quotesWithAverageOfRange = quotesWithAverage.slice(startIndex, lastIndex);
+            drawQuotes(quotesOfRange, quotesWithAverageOfRange);
         });
 
     });

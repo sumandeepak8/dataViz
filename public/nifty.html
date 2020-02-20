@@ -64,6 +64,29 @@
         .range-label {
             width: 30px;
         }
+
+        .table-container {
+            margin: 50px;
+            width: 500px;
+            min-height: 200px;
+        }
+
+        tr:nth-child(odd) { 
+        background: #aae6df;
+        
+        }
+        
+	    tr:nth-child(even) {
+		background: #fcfbfc;
+	    }
+
+        td, th {
+            min-width: 112px;
+            text-align: center !important;
+            border: 1px solid;
+            border-collapse: collapse;
+        }
+            
     </style>
     <title>Nifty</title>
 
@@ -81,6 +104,25 @@
                 <div id="slider-container"></div>
                 <div id="range-label">Time period</div>
                 <div id="chart-area"></div>
+                <div class="table-container">
+                    <table id="transaction-to-buy">
+                        <thead>
+                            <th>Sr. No.</th>
+                            <th>Buy</th>
+                            <th>Sell</th>
+                            <th>Profit/Loss</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <table>
+                        <thead>
+                            <th>Sr. No.</th>
+                            <th>Field</th>
+                            <th>Value</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
         </row>
   </div>
 </body>
