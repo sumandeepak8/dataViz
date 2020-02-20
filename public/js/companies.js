@@ -63,6 +63,24 @@ const drawCompanies = (companies, selectedField) => {
 
     const y = yAxisLabel(companies, selectedField);
     const x = xAxisLabel(companies);
+
+    const xAxis = d3.axisBottom(x);
+    const yAxis = d3.axisLeft(y).tickFormat(d => d).ticks(6);
+
+    g.append("g")
+        .call(xAxis)
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0, ${height})`);
+
+    g.selectAll(".x-axis text")
+        .attr("transform", "rotate(-40)")
+        .attr("x", -5)
+        .attr("y", 10);
+
+    g.append("g")
+        .call(yAxis)
+        .attr("class", "y-axis");
+
     newRects.append("rect")
         .attr("x", b => x(b.Name))
         .attr('y', b => y(b[selectedField]))
@@ -81,20 +99,12 @@ const updateCompanies = function (companies, selectedField) {
         .duration(1000)
         .ease(d3.easeLinear);
 
-    const g = d3.select("g");
     const y = yAxisLabel(companies, selectedField)
     const x = xAxisLabel(companies);
     const xAxis = d3.axisBottom(x);
-    svg.select('.x-axis').call(xAxis);
-
-    svg.selectAll(".x-axis text")
-        .attr("transform", "rotate(-40)")
-        .attr("x", -5)
-        .attr("y", 10);
-
     const yAxis = d3.axisLeft(y).tickFormat(d => d).ticks(6);
-
-    svg.select(".y-axis").call(yAxis);
+    svg.select('.x-axis').call(xAxis);
+    svg.select('.y-axis').call(yAxis);
 
     svg
         .selectAll("rect")
