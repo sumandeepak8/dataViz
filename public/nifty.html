@@ -6,12 +6,14 @@
     <style>
         html, body, .container {
             height: 100%;
-        }
-
-        .container {
             display: flex;
             flex-direction: column;
             justify-content: center;
+
+        }
+
+        .container {
+            height: 90%;
         }
 
         svg {
@@ -39,35 +41,47 @@
             fill: none;
         }
 
-        .container row {
-                margin-bottom: 20px;
-                border: 1px solid black;
+        #slider-container {
+            height: 30px;
         }
 
+        .slider-container {
+                margin-left: 105px;
+                margin-bottom: 20px;
+                border: 1px solid black;
+                height: 30px;
+        }
+
+        .slider-container .slider {
+            width: 100%;
+            background-color: rgb(51, 87, 126);;
+        }
+
+        .col-sm {
+            height: 90%;
+        }
+        
+        .range-label {
+            width: 30px;
+        }
     </style>
     <title>Nifty</title>
 
     <script src="js/lodash.min.js"></script>
     <script src="js/d3.v5.min.js"></script>
     <script src="js/nifty.js"></script>
-
     <script src="https://cdn.rawgit.com/RasmusFonseca/d3RangeSlider/master/d3RangeSlider.js"></script>
 
     <link href="https://cdn.rawgit.com/RasmusFonseca/d3RangeSlider/master/d3RangeSlider.css" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/companies.css">
 </head>
 <body>
-    
     <div class="container">
-        <div class="row">
-            <row class="col-sm">     
+        <row class="col-sm">
                 <div id="slider-container"></div>
-                <div id="range-label"></div>
-            </row>
-            <div id="chart-area" class="col-sm"></div>
-            <div id="chart-data" class="col-sm"></div>
-        </div>
+                <div id="range-label">Time period</div>
+                <div id="chart-area"></div>
+        </row>
   </div>
 </body>
 </html>

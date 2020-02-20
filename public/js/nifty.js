@@ -6,7 +6,7 @@ const margin = {
 };
 
 const chartSize = {
-    width: 1220,
+    width: 1120,
     height: 700,
 };
 
@@ -43,6 +43,9 @@ const intiChart = function () {
 
 const drawQuotes = function (quotes) {
     const g = d3.select('g');
+    g.selectAll('g').remove();
+    g.selectAll('path').remove();
+
     const fq = quotes[0];
     const lq = quotes[quotes.length - 1];
 
@@ -76,15 +79,11 @@ const drawQuotes = function (quotes) {
         .x(b => x(b.Date))
         .y(b => y(b[key]))
 
-    var slider = createD3RangeSlider(0, 100, "#slider-container");
-    slider.range(1, 100);
-
+    const modifiedQuotes = calculateAverage(quotes);
 
     g.append('path')
         .attr('class', 'close')
         .attr('d', line('Close')(quotes));
-
-    const modifiedQuotes = calculateAverage(quotes);
 
     g.append('path')
         .attr('class', 'average')
@@ -116,8 +115,26 @@ const parseQuote = function (quote) {
 
 const main = () => {
     d3.csv("data/nifty-data.csv", parseQuote).then(quotes => {
+        var slider = createD3RangeSlider(0, 100, "#slider-container");
+        slider.range(1, 100);
+
         intiChart();
         drawQuotes(quotes);
+
+        slider.onChange(newRange => {
+            let ratio = Math.round(quotes.length / 100);
+            let startIndex = newRange.begin * ratio;
+            let lastIndex = newRange.end * ratio;
+
+            let startDate = quotes[startIndex].Date.toDateString();
+
+            let endDate = quotes[lastIndex].Date.toDateString();
+
+            d3.select("#range-label").text(startDate + " - " + endDate);
+            let quotesOfRange = quotes.slice(startIndex, lastIndex);
+            drawQuotes(quotesOfRange);
+        });
+
     });
 }
 
