@@ -93,16 +93,29 @@ const getProfitOrLoss = transaction =>
 
 const getSrNum = (x = 1) => (() => x++);
 
-const getTableofStatistics = function (transactions) {
+const getStatistics = function (transactions) {
+    let { quotesOfProfit, quotesOfLoss, totalLoss, totalProfit } =
+        transactions.reduce((acc, x) => {
+            let value = getProfitOrLoss(x);
+            if (value >= 0) {
+                acc.totalProfit += value
+                acc.quotesOfProfit.push(x);
+            }
+            else {
+                acc.totalLoss += value
+                acc.quotesOfLoss.push(x);
+            }
+            return acc;
 
-    let quotesOfProfit = transactions.filter(x => getProfitOrLoss(x) >= 0);
-    let quotesOfLoss = transactions.filter(x => getProfitOrLoss(x) < 0);
+        }, {
+            quotesOfProfit: [],
+            quotesOfLoss: [],
+            totalLoss: 0,
+            totalProfit: 0
+        });
 
     let totalQuotesOfProfit = quotesOfProfit.length;
     let totalQuotesOfLoss = quotesOfLoss.length;
-
-    let totalProfit = quotesOfProfit.reduce((acc, x) => (acc + getProfitOrLoss(x)), 0);
-    let totalLoss = quotesOfLoss.reduce((acc, x) => (acc + getProfitOrLoss(x)), 0);
 
     let averageOfProfit = totalProfit / totalQuotesOfProfit;
     let averageOfLoss = totalLoss / totalQuotesOfLoss;
@@ -118,6 +131,20 @@ const getTableofStatistics = function (transactions) {
         averageOfProfit,
         expectancy,
     }
+}
+
+const getTableOfStatistics = function (transactions) {
+    const statisticsData = Object.entries(getStatistics(transactions));
+    const table = d3.select("#statistics")
+    const tableBody = table
+        .select("tbody")
+        .selectAll("tr")
+        .data(statisticsData)
+        .enter()
+        .append("tr");
+    tableBody.append("td").html(getSrNum());
+    tableBody.append("td").html(m => m[0]);
+    tableBody.append("td").html(m => m[1]);
 }
 
 const getTableOfAllTransaction = function (transactions) {
@@ -194,7 +221,7 @@ const main = () => {
 
         drawQuotes(quotes, quotesWithAverage, profitableQuotes);
         getTableOfAllTransaction(profitableQuotes.transactions);
-        console.log("statistics ", getTableofStatistics(profitableQuotes.transactions));
+        getTableOfStatistics(profitableQuotes.transactions);
         slider.onChange(({ begin, end }) => {
             let ratio = Math.round(quotes.length / 100);
             let startIndex = begin * ratio;
@@ -208,7 +235,6 @@ const main = () => {
             let quotesWithAverageOfRange = quotesWithAverage.slice(startIndex, lastIndex);
             drawQuotes(quotesOfRange, quotesWithAverageOfRange);
         });
-
     });
 }
 
